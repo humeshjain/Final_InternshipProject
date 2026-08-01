@@ -7,6 +7,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     plugins: [react(), tailwindcss()],
+    build: {
+      outDir: path.resolve(__dirname, '../dist'),
+      emptyOutDir: true
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
