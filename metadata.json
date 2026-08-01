@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Remix: Elevate Business ",
+  "description": "AI-Powered Billing, POS, Inventory, Accounting, and Business Management Suite for Indian Retailers and SMEs",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
