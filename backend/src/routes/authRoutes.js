@@ -19,4 +19,5 @@ authRouter.post('/audit-log', authenticateToken, validateAuditLog, authControlle
 // User Management
 authRouter.get('/users', authenticateToken, userController.getUsers);
 authRouter.post('/add-employee', authenticateToken, userController.addEmployee);
+authRouter.put('/users/:username', authenticateToken, userController.updateUser);
 authRouter.delete('/users/:username', authenticateToken, userController.deleteUser);

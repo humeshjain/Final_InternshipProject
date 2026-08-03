@@ -15,18 +15,16 @@ import SettingsPage from "../pages/SettingsPage.jsx";
 
 export const isTabAllowedForRole = (tab, role) => {
   if (!role) return false;
-  const norm = role.toLowerCase();
+  const norm = role.toLowerCase().trim();
   if (norm === "owner" || norm === "co_owner" || norm === "co-owner") return true;
-  if (norm === "admin" || norm === "manager") {
-    return ["dashboard", "settings", "import-export"].includes(tab);
-  }
+  if (norm === "admin" || norm === "manager") return true;
   if (norm === "staff" || norm === "cashier" || norm === "sales executive" || norm === "inventory manager") {
-    return ["billing", "catalog", "crm", "onboard-customer", "tickets", "ai"].includes(tab);
+    return ["dashboard", "billing", "catalog", "inventory", "crm", "onboard-customer", "tickets", "ai"].includes(tab);
   }
-  if (norm === "accountant") {
-    return ["dashboard", "accounting", "crm", "tickets", "ai", "import-export"].includes(tab);
+  if (norm === "finance" || norm === "accountant") {
+    return ["dashboard", "billing", "accounting", "crm", "hr", "import-export", "tickets", "ai"].includes(tab);
   }
-  return false;
+  return true;
 };
 
 export default function AppRoutes({
@@ -169,6 +167,8 @@ export default function AppRoutes({
       return (
         <HRPage
           db={db}
+          setDb={setDb}
+          sessionToken={sessionToken}
           addNotification={addNotification}
           activeBusinessId={activeBusinessId}
           triggerImportExport={triggerImportExport}

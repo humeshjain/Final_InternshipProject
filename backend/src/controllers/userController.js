@@ -26,6 +26,18 @@ export const userController = {
     }
   },
 
+  updateUser(req, res, next) {
+    try {
+      if (!req.user) {
+        return sendError(res, "Unauthorized", 401);
+      }
+      const user = authService.updateUser(req.user, req.params.username, req.body);
+      return sendSuccess(res, { user, message: `Member ${user.name} updated successfully!` });
+    } catch (err) {
+      return sendError(res, err.message, 400);
+    }
+  },
+
   deleteUser(req, res, next) {
     try {
       if (!req.user) {

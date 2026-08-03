@@ -221,7 +221,8 @@ authRouter.post('/add-employee', authenticateToken, (req, res) => {
 
   const salt = generateSalt();
   const hashedPassword = hashPassword(password, salt);
-  const assignedRole = role || EmployeeRole.STAFF;
+  let assignedRole = role ? role.trim() : EmployeeRole.STAFF;
+  if (assignedRole.toLowerCase() === 'accountant') assignedRole = EmployeeRole.FINANCE;
 
   const newEmpUser = {
     id: "user-" + Date.now(),
@@ -259,6 +260,64 @@ authRouter.post('/add-employee', authenticateToken, (req, res) => {
       email: newEmpUser.email,
       phone: newEmpUser.phone,
       salary: newEmpUser.salary
+    }
+  });
+});
+
+// 7.8. Update User account details
+authRouter.put('/users/:username', authenticateToken, (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: "Unauthorized access." });
+  }
+
+  const targetKey = req.params.username.toLowerCase().trim();
+  const targetUser = usersDb[targetKey];
+  if (!targetUser) {
+    return res.status(404).json({ error: "User profile not found." });
+  }
+
+  if (targetUser.businessId !== req.user.businessId) {
+    return res.status(403).json({ error: "Forbidden: You cannot modify users from another business workspace." });
+  }
+
+  const { name, role, email, phone, salary, password } = req.body;
+  if (name) targetUser.name = name.trim();
+  if (role) {
+    let normRole = role.trim();
+    if (normRole.toLowerCase() === 'accountant') normRole = EmployeeRole.FINANCE;
+    targetUser.role = normRole;
+  }
+  if (email !== undefined) targetUser.email = email.trim();
+  if (phone !== undefined) targetUser.phone = phone.trim();
+  if (salary !== undefined) targetUser.salary = Number(salary) || 0;
+
+  if (password && password.trim()) {
+    const salt = generateSalt();
+    targetUser.passwordSalt = salt;
+    targetUser.passwordHash = hashPassword(password.trim(), salt);
+  }
+
+  addAuditLog(
+    req.user.id,
+    req.user.username,
+    req.user.role,
+    req.user.businessId,
+    "User Account Updated",
+    `Updated login profile for ${targetUser.name} (@${targetUser.username}), role: '${targetUser.role}'.`
+  );
+
+  res.json({
+    success: true,
+    message: `Member ${targetUser.name} updated successfully!`,
+    user: {
+      id: targetUser.id,
+      username: targetUser.username,
+      name: targetUser.name,
+      role: targetUser.role,
+      businessId: targetUser.businessId,
+      email: targetUser.email,
+      phone: targetUser.phone,
+      salary: targetUser.salary
     }
   });
 });

@@ -36,5 +36,44 @@ export const authApi = {
       },
       body: JSON.stringify({ action, details })
     });
+  },
+
+  async getUsers(token) {
+    const res = await fetch(`${API_BASE_URL}/api/auth/users`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
+  },
+
+  async addEmployee(token, payload) {
+    const res = await fetch(`${API_BASE_URL}/api/auth/add-employee`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async updateUser(token, username, payload) {
+    const res = await fetch(`${API_BASE_URL}/api/auth/users/${encodeURIComponent(username)}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async deleteUser(token, username) {
+    const res = await fetch(`${API_BASE_URL}/api/auth/users/${encodeURIComponent(username)}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    return res.json();
   }
 };

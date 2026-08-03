@@ -132,7 +132,10 @@ export const authService = {
 
     const salt = generateSalt();
     const hashedPassword = hashPassword(password, salt);
-    const assignedRole = role || EmployeeRole.STAFF;
+    
+    // Normalize role to standard 4 system roles: Owner, Admin, Staff, Finance
+    let assignedRole = role ? role.trim() : EmployeeRole.STAFF;
+    if (assignedRole.toLowerCase() === 'accountant') assignedRole = EmployeeRole.FINANCE;
 
     const newEmpUser = {
       id: "user-" + Date.now(),
@@ -167,6 +170,56 @@ export const authService = {
       email: newEmpUser.email,
       phone: newEmpUser.phone,
       salary: newEmpUser.salary
+    };
+  },
+
+  updateUser(requestingUser, usernameToUpdate, { name, role, email, phone, salary, password }) {
+    const targetKey = usernameToUpdate.toLowerCase().trim();
+    const targetUser = userRepository.findByUsername(targetKey);
+    if (!targetUser) {
+      throw new Error("User profile not found.");
+    }
+
+    if (targetUser.businessId !== requestingUser.businessId) {
+      throw new Error("Forbidden: You cannot modify users from another business tenant.");
+    }
+
+    if (name) targetUser.name = name.trim();
+    if (role) {
+      let normRole = role.trim();
+      if (normRole.toLowerCase() === 'accountant') normRole = EmployeeRole.FINANCE;
+      targetUser.role = normRole;
+    }
+    if (email !== undefined) targetUser.email = email.trim();
+    if (phone !== undefined) targetUser.phone = phone.trim();
+    if (salary !== undefined) targetUser.salary = Number(salary) || 0;
+
+    if (password && password.trim()) {
+      const salt = generateSalt();
+      targetUser.passwordSalt = salt;
+      targetUser.passwordHash = hashPassword(password.trim(), salt);
+    }
+
+    userRepository.saveUser(targetUser);
+
+    auditService.logAction(
+      requestingUser.id,
+      requestingUser.username,
+      requestingUser.role,
+      requestingUser.businessId,
+      "User Account Updated",
+      `Updated login profile for ${targetUser.name} (@${targetUser.username}), role: '${targetUser.role}'.`
+    );
+
+    return {
+      id: targetUser.id,
+      username: targetUser.username,
+      name: targetUser.name,
+      role: targetUser.role,
+      businessId: targetUser.businessId,
+      email: targetUser.email,
+      phone: targetUser.phone,
+      salary: targetUser.salary
     };
   },
 

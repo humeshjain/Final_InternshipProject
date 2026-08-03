@@ -94,7 +94,7 @@ const ENTITY_SCHEMAS = {
   employees: [
     { key: "username", label: "Staff Username", required: true, type: "string", desc: "Unique login handle, e.g. amit_sharma" },
     { key: "name", label: "Full Name", required: true, type: "string", desc: "Employee display name" },
-    { key: "role", label: "System Role", required: true, type: "select", options: ["Manager", "Accountant", "Cashier", "Inventory Manager", "Sales Executive"], desc: "Roster authorization" },
+    { key: "role", label: "System Role", required: true, type: "select", options: ["Owner", "Admin", "Staff", "Finance"], desc: "Roster authorization" },
     { key: "phone", label: "Phone Number", required: true, type: "string", desc: "Contact contact" },
     { key: "email", label: "Email Address", required: false, type: "string", desc: "Corporate email" },
     { key: "salary", label: "Monthly Salary", required: true, type: "number", desc: "Fixed compensation (₹)" },
@@ -2117,12 +2117,10 @@ export default function ImportExportModule({
                     onChange={(e) => setEmployeeForm(prev => ({ ...prev, role: e.target.value }))}
                     className="input-elevate w-full font-bold"
                   >
-                    <option value="Manager">Manager</option>
-                    <option value="Accountant">Accountant</option>
-                    <option value="Cashier">Cashier</option>
-                    <option value="Inventory Manager">Inventory Manager</option>
-                    <option value="Sales Executive">Sales Executive</option>
+                    <option value="Owner">Owner</option>
+                    <option value="Admin">Admin</option>
                     <option value="Staff">Staff</option>
+                    <option value="Finance">Finance</option>
                   </select>
                 </div>
               </div>
