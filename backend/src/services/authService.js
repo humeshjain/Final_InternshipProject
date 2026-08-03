@@ -13,7 +13,8 @@ export const authService = {
     const salt = generateSalt();
     const hashedPassword = hashPassword(password, salt);
     const businessId = "biz-" + Date.now();
-    const assignedRole = role || EmployeeRole.OWNER;
+    // Registering a workspace always assigns the Owner role with full access
+    const assignedRole = EmployeeRole.OWNER;
 
     const newUser = {
       id: "user-" + Date.now(),

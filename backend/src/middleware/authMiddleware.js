@@ -24,7 +24,10 @@ export function authorizeRoles(allowedRoles) {
     if (!req.user) {
       return sendError(res, ErrorMessages.UNAUTHORIZED, 401);
     }
-    if (!allowedRoles.includes(req.user.role)) {
+    const userRoleLower = (req.user.role || '').toLowerCase();
+    // Owner role always has all access
+    const isAllowed = userRoleLower === 'owner' || allowedRoles.some(r => r.toLowerCase() === userRoleLower);
+    if (!isAllowed) {
       return sendError(res, `Permission Denied: Your role (${req.user.role}) is not authorized to perform this operation.`, 403);
     }
     next();

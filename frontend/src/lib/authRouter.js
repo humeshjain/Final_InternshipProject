@@ -42,7 +42,8 @@ authRouter.post('/register', (req, res) => {
   
   // Assign or generate unique Business ID / Organization ID
   const businessId = "biz-" + Date.now();
-  const assignedRole = role || EmployeeRole.OWNER;
+  // Registering a workspace always assigns the Owner role with full access
+  const assignedRole = EmployeeRole.OWNER;
   
   const newUser = {
     id: "user-" + Date.now(),

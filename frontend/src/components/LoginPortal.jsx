@@ -82,7 +82,7 @@ export default function LoginPortal({
             name,
             email,
             phone,
-            role: "owner",
+            role: "Owner",
             businessName
           })
         });
